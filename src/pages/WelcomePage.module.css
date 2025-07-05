@@ -1,0 +1,30 @@
+.root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* 縦中央 */
+  align-items: center;     /* 横中央 */
+  gap: 2rem;
+  font-family: sans-serif;
+  text-align: center;
+}
+
+.newButton {
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 8px;
+  border: none;
+  background: #1982c4;
+  color: #fff;
+}
+
+.uploadLabel {
+  display: inline-block;
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  border: 2px dashed #6a4c93;
+  border-radius: 8px;
+  color: #6a4c93;
+  cursor: pointer;
+}
