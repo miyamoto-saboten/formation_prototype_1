@@ -4,35 +4,43 @@ on:
   push:
     branches: [main]
 
-permissions:
-  contents: write   # gh-pages ブランチへの push に必要
-
 jobs:
   build-deploy:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: write    # gh-pages ブランチへの push に必要
+
     steps:
-      # 1) ソース取得 ---------------------------------------------------
-      - uses: actions/checkout@v4
+      # 1) ソースをチェックアウト
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      # 2) Node.js + パッケージキャッシュ -----------------------------
-      - uses: actions/setup-node@v4
+      # 2) Node.js をセットアップ（npm/yarn キャッシュ含む）
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: pnpm        # ~/.pnpm-store を自動キャッシュ
+          node-version: '20'
+          cache: 'pnpm'              # ← ここで pnpm ストアもキャッシュ対象に
 
-      # 3) pnpm をインストール (必須) ---------------------------------
-      - uses: pnpm/action-setup@v2
+      # 3) pnpm をインストール & PATH へ追加
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
         with:
-          version: 9         # 使いたい pnpm のバージョン
-          run_install: false # install は後で実行する
+          version: 9                 # 必要に応じて固定バージョン
+          run_install: false         # install は次の step で手動実行
 
-      # 4) 依存解決 & ビルド -----------------------------------------
-      - run: pnpm install          # ---> ここで pnpm が使える
-      - run: pnpm run build        # dist/ フォルダ生成
+      # 4) 依存パッケージをインストール
+      - name: Install dependencies
+        run: pnpm install
 
-      # 5) GitHub Pages へ公開 ---------------------------------------
-      - uses: peaceiris/actions-gh-pages@v4
+      # 5) Vite ビルド
+      - name: Build
+        run: pnpm run build          # dist/ が生成される想定
+
+      # 6) GitHub Pages へデプロイ
+      - name: Deploy to Pages
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist       # Vite の出力先
+          publish_dir: ./dist        # Vite の出力先
