@@ -1,3 +1,4 @@
+# .github/workflows/gh-pages.yml
 name: Deploy to GitHub Pages
 
 on:
@@ -7,15 +8,25 @@ on:
 jobs:
   build-deploy:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+
+      - uses: actions/setup-node@v4       # Node を入れる
         with:
           node-version: 20
-          cache: pnpm
-      - run: corepack enable
-      - run: pnpm install
-      - run: pnpm run build
+          cache: 'pnpm'                   # ⬅ pnpm 用キャッシュ有効化
+
+      # ★ ここで pnpm をセットアップ ★
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 9                      # お好みの pnpm バージョン
+          run_install: false              # 後で自分で install する
+
+      # ここ以降は pnpm が使える
+      - run: pnpm install                 # 依存関係
+      - run: pnpm run build               # Vite ビルド
+
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v4
         with:
