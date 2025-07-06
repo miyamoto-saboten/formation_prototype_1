@@ -2,50 +2,38 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [main]
+    branches: [main]     # main 以外の場合は適宜変更
+  workflow_dispatch:     # 手動実行も可能
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
-  build-deploy:
+  build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write        # gh-pages ブランチへ push する権限
-
     steps:
-      # 1. ソース取得
       - uses: actions/checkout@v4
-
-      # 2. Node をセットアップ（pnpm のキャッシュも有効化）
+      - uses: pnpm/action-setup@v3   # pnpm の公式セットアップ
+        with:
+          version: 9
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
-
-      # 3. ★ pnpm をインストールし PATH に通す（必須）★
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v3
+          node-version: '20'
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run build
+      - uses: actions/upload-pages-artifact@v3
         with:
-          version: 9          # お好みの pnpm バージョン
-          run_install: false  # ここでは install しない
+          path: dist
 
-      - name: Get pnpm store directory
-        shell: bash
-        run: echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
-
-      - name: Setup pnpm cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: ${{ runner.os }}-pnpm-store-
-
-
-      # 4. 依存インストール
-      - run: pnpm install
-
-      # 5. Vite ビルド
-      - run: pnpm run build    # → dist/
-
-      # 6. gh-pages ブランチへデプロイ
-      - uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
