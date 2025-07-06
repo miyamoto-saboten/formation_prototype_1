@@ -1,2 +1,4 @@
 ignoredBuiltDependencies:
   - esbuild
+packages:
+  - '**'   # ルートと全サブディレクトリを対象にする
