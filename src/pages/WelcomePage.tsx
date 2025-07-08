@@ -1,5 +1,6 @@
 // src/pages/WelcomePage.tsx
-import React, { ChangeEvent, useCallback } from 'react';
+import { useCallback } from 'react';
+import type { ChangeEvent, FC } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './WelcomePage.module.css';
 
@@ -13,7 +14,7 @@ interface ProjectFile {
 }
 
 /** --- 画面コンポーネント --- */
-const WelcomePage: React.FC = () => {
+const WelcomePage: FC = () => {
   const navigate = useNavigate();
 
   /** 「新しく始める」 */

@@ -1,5 +1,5 @@
 // src/components/GridSettingsModal.tsx
-import React, { useState, ChangeEvent } from 'react';
+import type { useState, ChangeEvent } from 'react';
 
 export type StageConfig = {
   rows: number;

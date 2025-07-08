@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import GridSettingsModal, { type StageConfig } from '../components/GridSettingsModal';
 import NameEditModal from '../components/NameEditModal';
@@ -42,8 +42,8 @@ export default function EditorPage() {
   /* -------- アニメーション -------- */
   const [playing, setPlaying] = useState(false);
   const [display, setDisplay] = useState<Dancer[]>([]); // キャンバス描画用
-  const rafRef = useRef<number>();
-  const startRef = useRef<number>();
+  const rafRef = useRef<number | undefined>(undefined);
+  const startRef = useRef<number | undefined>(undefined);
   const srcRef = useRef<Dancer[]>([]);
   const dstRef = useRef<Dancer[]>([]);
 

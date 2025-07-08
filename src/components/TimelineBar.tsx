@@ -1,5 +1,3 @@
-import React from 'react';
-
 export interface FormationMeta {
   id: string;
   name: string;
